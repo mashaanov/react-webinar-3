@@ -3,8 +3,18 @@
  */
 class Store {
   constructor(initState = {}) {
-    this.state = initState;
+    // Инициализация состояния
+    this.state = {
+      ...initState,
+      list: initState.list.map(item => ({
+        ...item,
+        selectionCount: item.selectionCount || 0 // Устанавливаем selectionCount для всех записей
+      }))
+    };
     this.listeners = []; // Слушатели изменений состояния
+
+    // Определяем максимальный код в начальном состоянии
+    this.maxCode = Math.max(...(this.state.list.map(item => item.code)), 0);
   }
 
   /**
@@ -33,18 +43,28 @@ class Store {
    * @param newState {Object}
    */
   setState(newState) {
-    this.state = newState;
+    this.state = {
+      ...newState,
+      list: newState.list.map(item => ({
+        ...item,
+        selectionCount: item.selectionCount || 0 // Устанавливаем selectionCount для всех записей
+      }))
+    };
     // Вызываем всех слушателей
     for (const listener of this.listeners) listener();
   }
 
   /**
-   * Добавление новой записи
+   * Добавление новой записи с уникальным кодом
    */
   addItem() {
+    // Увеличиваем maxCode на 1 для новой записи
+    const newCode = this.maxCode + 1;
+    this.maxCode = newCode; // Обновляем максимальный код
+
     this.setState({
       ...this.state,
-      list: [...this.state.list, { code: this.state.list.length + 1, title: 'Новая запись' }],
+      list: [...this.state.list, { code: newCode, title: 'Новая запись', selectionCount: 0 }],
     });
   }
 
@@ -68,9 +88,13 @@ class Store {
       ...this.state,
       list: this.state.list.map(item => {
         if (item.code === code) {
-          item.selected = !item.selected;
+          return { 
+            ...item, 
+            selected: !item.selected,
+            selectionCount: item.selected ? item.selectionCount : item.selectionCount + 1 // Увеличиваем счётчик выделений
+          };
         }
-        return item;
+        return { ...item, selected: false };
       }),
     });
   }
