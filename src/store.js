@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 /**
  * Хранилище состояния приложения
  */
@@ -13,8 +15,8 @@ class Store {
     };
     this.listeners = []; // Слушатели изменений состояния
 
-    // Определяем максимальный код в начальном состоянии
-    this.maxCode = Math.max(...(this.state.list.map(item => item.code)), 0);
+    // Обновляем максимальный код на основании текущих кодов
+    this.maxCode = Math.max(...this.state.list.map(item => item.code || 0), 0);
   }
 
   /**
@@ -58,9 +60,8 @@ class Store {
    * Добавление новой записи с уникальным кодом
    */
   addItem() {
-    // Увеличиваем maxCode на 1 для новой записи
-    const newCode = this.maxCode + 1;
-    this.maxCode = newCode; // Обновляем максимальный код
+    // Генерируем уникальный код (UUID)
+    const newCode = uuidv4();
 
     this.setState({
       ...this.state,
@@ -91,7 +92,7 @@ class Store {
           return { 
             ...item, 
             selected: !item.selected,
-            selectionCount: item.selected ? item.selectionCount : item.selectionCount + 1 // Увеличиваем счётчик выделений
+            selectionCount: item.selected ? item.selectionCount - 1 : item.selectionCount + 1
           };
         }
         return { ...item, selected: false };
