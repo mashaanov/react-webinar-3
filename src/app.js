@@ -1,19 +1,23 @@
 import React from 'react';
-import { createElement } from './utils.js';
 import './styles.css';
 
-/**
- * Приложение
- * @param store {Store} Состояние приложения
- * @returns {React.ReactElement}
- */
 function App({ store }) {
   const list = store.getState().list;
+
+  function getSelectionCountText(count) {
+    if (count === 1) {
+      return `Выделяли ${count} раз`;
+    } else if (count >= 2 && count <= 4) {
+      return `Выделяли ${count} раза`;
+    } else {
+      return `Выделяли ${count} раз`;
+    }
+  }
 
   return (
     <div className="App">
       <div className="App-head">
-        <h1>Приложение на чистом JS</h1>
+        <h1>Название приложения</h1> {/* Замените на нужный заголовок */}
       </div>
       <div className="App-controls">
         <button onClick={() => store.addItem()}>Добавить</button>
@@ -30,7 +34,7 @@ function App({ store }) {
                 <div className="Item-title">{item.title}</div>
                 {item.selectionCount > 0 && (
                   <div className="Item-selectionCount">
-                    Выделяли {item.selectionCount} раз
+                    {getSelectionCountText(item.selectionCount)}
                   </div>
                 )}
                 <div className="Item-actions">
