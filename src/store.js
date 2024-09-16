@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 /**
  * Хранилище состояния приложения
  */
@@ -60,8 +58,7 @@ class Store {
    * Добавление новой записи с уникальным кодом
    */
   addItem() {
-    // Генерируем уникальный код (UUID)
-    const newCode = uuidv4();
+    const newCode = this.maxCode + 1;
 
     this.setState({
       ...this.state,
@@ -92,7 +89,7 @@ class Store {
           return { 
             ...item, 
             selected: !item.selected,
-            selectionCount: item.selected ? item.selectionCount - 1 : item.selectionCount + 1
+            selectionCount: item.selected ? item.selectionCount : item.selectionCount + 1
           };
         }
         return { ...item, selected: false };
